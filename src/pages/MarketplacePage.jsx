@@ -46,7 +46,7 @@ const MarketplacePage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-900 py-8 text-white">
       <div className="max-w-7xl mx-auto px-4">
         {/* Search and Filter Section */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -60,7 +60,7 @@ const MarketplacePage = () => {
             />
             <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-300  text-gray-800">
             <SlidersHorizontal className="h-5 w-5" />
             Filters
           </button>
@@ -74,10 +74,10 @@ const MarketplacePage = () => {
               <button
                 key={name}
                 onClick={() => setSelectedCategory(name)}
-                className={`flex flex-col items-center p-4 rounded-xl border transition
+                className={`flex flex-col items-center p-4 rounded-xl border transition-colors duration-150
                   ${selectedCategory === name 
-                    ? 'border-green-500 bg-green-50 text-green-700' 
-                    : 'border-gray-200 hover:border-green-500 hover:bg-green-50'
+                    ? 'border-green-500 bg-green-600 text-white' 
+                    : 'border-gray-200 bg-gray-800 text-gray-300 hover:border-green-500 hover:bg-green-700 hover:text-white'
                   }`}
               >
                 <Icon className="h-6 w-6 mb-2" />

@@ -1,7 +1,18 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Laptop, Phone, Tv } from 'lucide-react';
+import Footer from '../components/Footer';
 
 const HomePage = () => {
+  const navigate = useNavigate();
+
+  const handleSellDeviceClick = () => {
+    navigate("/sell");
+  };
+  const handleBrowseProductsClick = () => {
+    navigate("/marketplace");
+  }
+
   return (
     <div className="flex flex-col bg-gray-900 text-white">
       {/* Hero Section */}
@@ -15,11 +26,14 @@ const HomePage = () => {
             Join the sustainable tech revolution. Buy, sell, and recycle electronics responsibly.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <button className="bg-green-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-700 transition flex items-center">
+            <button
+              className="bg-green-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-700 transition flex items-center"
+              onClick={handleSellDeviceClick}
+            >
               Sell Your Device
               <ArrowRight className="ml-2 h-5 w-5" />
             </button>
-            <button className="bg-white text-green-800 px-8 py-3 rounded-full font-semibold hover:bg-green-50 transition">
+            <button className="bg-white text-green-800 px-8 py-3 rounded-full font-semibold hover:bg-green-50 transition" onClick={handleBrowseProductsClick}>
               Browse Products
             </button>
           </div>
@@ -54,6 +68,9 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

@@ -1,7 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Laptop, Phone, Tv } from 'lucide-react';
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleSellDeviceClick = () => {
+    navigate('/marketplace');
+  };
+
   return (
     <div className="flex flex-col bg-gray-900 text-white">
       {/* Hero Section */}
@@ -15,7 +22,10 @@ const HomePage: React.FC = () => {
             Join the sustainable tech revolution. Buy, sell, and recycle electronics responsibly.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <button className="bg-green-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-700 transition flex items-center">
+            <button
+              className="bg-green-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-700 transition flex items-center"
+              onClick={handleSellDeviceClick}
+            >
               Sell Your Device
               <ArrowRight className="ml-2 h-5 w-5" />
             </button>
