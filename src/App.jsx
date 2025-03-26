@@ -16,6 +16,7 @@ const App = () => {
       {showNavbarAndFooter && <Navbar />}
       <main className="flex-grow">
         <Routes>
+
           <Route path="/" element={<HomePage />} />
           <Route path="/marketplace" element={<MarketplacePage />} />
           <Route path="/auctions" element={<AuctionsPage />} />

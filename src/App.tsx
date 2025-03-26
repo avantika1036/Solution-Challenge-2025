@@ -7,6 +7,7 @@ import AuctionsPage from './pages/AuctionsPage';
 import SellDevicePage from './pages/SellDevicePage';
 import Footer from './components/Footer';
 
+
 const App = () => {
   const location = useLocation();
   const showNavbarAndFooter = location.pathname !== '/';
