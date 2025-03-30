@@ -29,49 +29,55 @@ const Navbar: React.FC = () => {
   const [ecoPoints, setEcoPoints] = useState<number>(0);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser: FirebaseUser | null) => {
-      if (currentUser) {
-        try {
-          const userDocRef = doc(db, "users", currentUser.uid);
-          const userSnap = await getDoc(userDocRef);
-  
-          let updatedUser: User = {
-            name: currentUser.displayName || "Guest",  // Default to Guest if no displayName
-            email: currentUser.email || "No Email",
-            photoURL: currentUser.photoURL || undefined,
-          };
-  
-          if (userSnap.exists()) {
-            const userData = userSnap.data() as FirebaseUserData;
-  
-            // ✅ Ensure state updates correctly
-            updatedUser.name = userData.name || userData.username || updatedUser.name;
-            updatedUser.photoURL = userData.photoURL || updatedUser.photoURL;
-            setEcoPoints(userData.co2Reduced ? Math.round(userData.co2Reduced * 10) : 0);
-  
-            console.log("Updated User Data:", updatedUser); // Debugging Log
-          }
-  
-          setUser(updatedUser);
-  
-          // 🔥 Force React to re-render when data updates
-          if (!currentUser.displayName || currentUser.displayName !== updatedUser.name) {
-            await updateProfile(currentUser, { displayName: updatedUser.name });
-            console.log("Updated Firebase Auth Display Name:", updatedUser.name);
-          }
-  
-        } catch (error) {
-          console.error("Error fetching user data:", error);
+    const fetchUserData = async (currentUser: FirebaseUser) => {
+      if (!currentUser) return;
+      try {
+        const userDocRef = doc(db, "users", currentUser.uid);
+        const userSnap = await getDoc(userDocRef);
+
+        let updatedUser: User = {
+          name: currentUser.displayName || "Guest", // Default name
+          email: currentUser.email || "No Email",
+          photoURL: currentUser.photoURL || undefined,
+        };
+
+        if (userSnap.exists()) {
+          const userData = userSnap.data() as FirebaseUserData;
+          updatedUser.name = userData.username || updatedUser.name; // Prioritize Firestore username
+          updatedUser.photoURL = userData.photoURL || updatedUser.photoURL;
+          setEcoPoints(userData.co2Reduced ? Math.round(userData.co2Reduced * 10) : 0);
         }
+
+        setUser(updatedUser); // Update state
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        fetchUserData(currentUser);
       } else {
         setUser(null);
         setEcoPoints(0);
       }
     });
-  
+
     return () => unsubscribe();
   }, []);
-  
+
+  // ✅ This function forces Firebase to refresh user data after profile update
+  const refreshUserProfile = async () => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      await currentUser.reload(); // Force Firebase to update the user profile
+      setUser({
+        name: currentUser.displayName || "Guest",
+        email: currentUser.email || "No Email",
+        photoURL: currentUser.photoURL || undefined,
+      });
+    }
+  };
 
   return (
     <>
@@ -137,8 +143,13 @@ const Navbar: React.FC = () => {
         </div>
       </nav>
 
-      {/* User Profile Modal */}
-      {showProfileModal && <UserProfileModal onClose={() => setShowProfileModal(false)} />}
+      {/* User Profile Modal (Pass refresh function to update Navbar after save) */}
+      {showProfileModal && (
+        <UserProfileModal onClose={() => {
+          setShowProfileModal(false);
+          refreshUserProfile(); // 🔥 Refresh Navbar after profile update
+        }} />
+      )}
     </>
   );
 };

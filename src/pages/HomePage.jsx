@@ -10,7 +10,7 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const handleSellDeviceClick = () => {
-    navigate("/sell");
+    navigate("/auth");
   };
 
   const handleBrowseProductsClick = () => {
