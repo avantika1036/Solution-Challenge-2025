@@ -11,7 +11,8 @@ import MarketplacePage from "./pages/MarketplacePage";
 import AuctionsPage from "./pages/AuctionsPage";
 import SellDevicePage from "./pages/SellDevicePage";
 import EnvironmentalImpactPage from "./pages/EnvironmentalImpactPage";
-import AuthPage from "./pages/AuthPage"; // Import Auth Page
+import AuthPage from "./pages/AuthPage";
+import DeviceDetail from "./pages/DeviceDetail"; // ✅ Import DeviceDetail Page
 import Footer from "./components/Footer";
 
 const App: React.FC = () => {
@@ -28,7 +29,8 @@ const App: React.FC = () => {
           <Route path="/auctions" element={<AuctionsPage />} />
           <Route path="/sell" element={<SellDevicePage />} />
           <Route path="/environmental-impact" element={<EnvironmentalImpactPage />} />
-          <Route path="/auth" element={<AuthPage />} /> {/* ✅ New Auth Route */}
+          <Route path="/auth" element={<AuthPage />} /> 
+          <Route path="/device/:id" element={<DeviceDetail />} /> {/* ✅ New Device Details Route */}
         </Routes>
       </main>
       {showNavbarAndFooter && <Footer />}
