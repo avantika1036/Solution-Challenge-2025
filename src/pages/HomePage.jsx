@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Laptop, Phone, Tv } from 'lucide-react';
-import Footer from '../components/Footer';
 import AnimatedContent from '../components/ReactbitsCom/AnimatedContent';
 import BlurText from '../components/ReactbitsCom/BlurText';
 import ClickSpark from '../components/ReactbitsCom/ClickSpark';
@@ -18,12 +17,12 @@ const HomePage = () => {
   };
 
   const handleAnimationComplete = () => {
-    console.log('Animation completed!');
+    console.log("Animation completed!");
   };
 
   return (
     <ClickSpark
-      sparkColor='#fff'
+      sparkColor="#fff"
       sparkSize={10}
       sparkRadius={15}
       sparkCount={8}
@@ -46,12 +45,13 @@ const HomePage = () => {
               animateBy="words"
               direction="top"
               onAnimationComplete={handleAnimationComplete}
-              className="text-3xl sm:text-4xl md:text-6xl font-bold mb-6"
+              className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6"
             />
-            <p className="text-lg sm:text-xl mb-8">
-              Join the sustainable tech revolution. Buy, sell, and recycle electronics responsibly.
+            <p className="text-base sm:text-lg md:text-xl mb-8">
+              Join the sustainable tech revolution. Buy, sell, and recycle
+              electronics responsibly.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap justify-center items-center gap-4 w-full">
               <AnimatedContent
                 distance={150}
                 direction="horizontal"
@@ -59,24 +59,26 @@ const HomePage = () => {
                 config={{ tension: 80, friction: 20 }}
                 initialOpacity={0.3}
                 animateOpacity
-                scale={2}
-                threshold={1}
-              > <ClickSpark
-
-                sparkColor='#fff'
-                sparkSize={10}
-                sparkRadius={15}
-                sparkCount={8}
-                duration={400}
+                scale={1.2}
+                threshold={0.5}
+                onAnimationStart={() => console.log("Animation started")}
+                onAnimationComplete={() => console.log("Animation completed")}
               >
+                <ClickSpark
+                  sparkColor="#fff"
+                  sparkSize={10}
+                  sparkRadius={15}
+                  sparkCount={8}
+                  duration={400}
+                >
                   <button
-                    className="bg-green-600 text-white px-6 sm:px-8 py-3 rounded-full font-semibold hover:bg-green-700 transition flex items-center"
+                    className="bg-green-600 text-white px-6 sm:px-8 py-3 rounded-full font-semibold hover:bg-green-700 transition flex items-center justify-center w-full sm:w-auto"
                     onClick={handleSellDeviceClick}
                   >
                     Sell Your Device
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </button>
-                  </ClickSpark>
+                </ClickSpark>
               </AnimatedContent>
               <AnimatedContent
                 distance={150}
@@ -85,11 +87,11 @@ const HomePage = () => {
                 config={{ tension: 80, friction: 20 }}
                 initialOpacity={0.3}
                 animateOpacity
-                scale={2}
-                threshold={1}
+                scale={1.2}
+                threshold={0.5}
               >
                 <button
-                  className="bg-white text-green-800 px-6 sm:px-8 py-3 rounded-full font-semibold hover:bg-green-50 transition"
+                  className="bg-white text-green-800 px-6 sm:px-8 py-3 rounded-full font-semibold hover:bg-green-50 transition w-full sm:w-auto"
                   onClick={handleBrowseProductsClick}
                 >
                   Browse Products
@@ -107,29 +109,26 @@ const HomePage = () => {
                 <div className="flex justify-center mb-4">
                   <Phone className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />
                 </div>
-                <h3 className="text-3xl sm:text-4xl font-bold mb-2">2.5M+</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-2">2.5M+</h3>
                 <p className="text-green-600">Devices Recycled</p>
               </div>
               <div className="text-center p-6 bg-gray-700 rounded-xl">
                 <div className="flex justify-center mb-4">
                   <Laptop className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />
                 </div>
-                <h3 className="text-3xl sm:text-4xl font-bold mb-2">74M</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-2">74M</h3>
                 <p className="text-green-600">Tons of E-Waste by 2030</p>
               </div>
               <div className="text-center p-6 bg-gray-700 rounded-xl">
                 <div className="flex justify-center mb-4">
                   <Tv className="h-10 w-10 sm:h-12 sm:w-12 text-green-600" />
                 </div>
-                <h3 className="text-3xl sm:text-4xl font-bold mb-2">500K+</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold mb-2">500K+</h3>
                 <p className="text-green-600">Active Users</p>
               </div>
             </div>
           </div>
         </section>
-
-        {/* Footer */}
-        <Footer />
       </div>
     </ClickSpark>
   );

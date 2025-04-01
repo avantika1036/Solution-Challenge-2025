@@ -87,81 +87,83 @@ const EnvironmentalImpactPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-green-700 mb-8">Your Environmental Impact</h1>
-      
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-green-50 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-green-800">CO₂ Reduced</h3>
-          <p className="text-2xl font-bold text-green-600">
-            {impactData.co2Reduced} kg
-          </p>
-          <p className="text-sm text-green-500 mt-1">
-            Equivalent to {Math.round(impactData.co2Reduced * 1.6)} miles not driven
-          </p>
-        </div>
+    <div className="bg-gray-900 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-3xl font-bold text-green-400 mb-8">Your Environmental Impact</h1>
         
-        <div className="bg-green-50 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-green-800">Waste Diverted</h3>
-          <p className="text-2xl font-bold text-green-600">
-            {impactData.wasteDiverted} kg
-          </p>
-          <p className="text-sm text-green-500 mt-1">
-            Equivalent to {Math.round(impactData.wasteDiverted / 4)} trash bags
-          </p>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-green-50 p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-green-800">CO₂ Reduced</h3>
+            <p className="text-2xl font-bold text-green-600">
+              {impactData.co2Reduced} kg
+            </p>
+            <p className="text-sm text-green-500 mt-1">
+              Equivalent to {Math.round(impactData.co2Reduced * 1.6)} miles not driven
+            </p>
+          </div>
+          
+          <div className="bg-green-50 p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-green-800">Waste Diverted</h3>
+            <p className="text-2xl font-bold text-green-600">
+              {impactData.wasteDiverted} kg
+            </p>
+            <p className="text-sm text-green-500 mt-1">
+              Equivalent to {Math.round(impactData.wasteDiverted / 4)} trash bags
+            </p>
+          </div>
+          
+          <div className="bg-green-50 p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-green-800">Items Recycled</h3>
+            <p className="text-2xl font-bold text-green-600">
+              {impactData.itemsRecycled}
+            </p>
+            <p className="text-sm text-green-500 mt-1">
+              {Math.round(impactData.itemsRecycled / 5)} devices per month
+            </p>
+          </div>
         </div>
-        
-        <div className="bg-green-50 p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-green-800">Items Recycled</h3>
-          <p className="text-2xl font-bold text-green-600">
-            {impactData.itemsRecycled}
-          </p>
-          <p className="text-sm text-green-500 mt-1">
-            {Math.round(impactData.itemsRecycled / 5)} devices per month
-          </p>
-        </div>
-      </div>
 
-      {/* Bar Chart */}
-      <div className="bg-white p-6 rounded-lg shadow mb-8">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">
-          Total Environmental Impact
-        </h2>
-        <div className="h-80">
-          <Bar 
-            data={barData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: 'top',
+        {/* Bar Chart */}
+        <div className="bg-white p-6 rounded-lg shadow mb-8">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            Total Environmental Impact
+          </h2>
+          <div className="h-80">
+            <Bar 
+              data={barData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
                 },
-              },
-            }}
-          />
+              }}
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Line Chart */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">
-          Monthly Progress
-        </h2>
-        <div className="h-80">
-          <Line 
-            data={lineData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: 'top',
+        {/* Line Chart */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            Monthly Progress
+          </h2>
+          <div className="h-80">
+            <Line 
+              data={lineData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
                 },
-              },
-            }}
-          />
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

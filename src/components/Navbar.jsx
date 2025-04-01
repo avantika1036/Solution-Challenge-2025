@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Recycle, ShoppingCart, UserCircle, Leaf } from "lucide-react";
+import { Recycle, ShoppingCart, UserCircle, Leaf, Menu, X } from "lucide-react";
 import UserProfileModal from "./UserProfileModal";
-import { auth, db } from "../firebaseConfig"; 
+import { auth, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -12,6 +12,7 @@ const Navbar = () => {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [user, setUser] = useState(null);
   const [ecoPoints, setEcoPoints] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -19,18 +20,18 @@ const Navbar = () => {
         try {
           const userDocRef = doc(db, "users", currentUser.uid);
           const userSnap = await getDoc(userDocRef);
-  
+
           let updatedUser = {
-            name: currentUser.displayName || "Guest", // Fetch updated displayName
+            name: currentUser.displayName || "Guest",
             email: currentUser.email || "No Email",
             photoURL: currentUser.photoURL || null,
           };
-  
+
           if (userSnap.exists()) {
             const userData = userSnap.data();
-            updatedUser.name = userData.username || updatedUser.name; // Firestore username takes priority
+            updatedUser.name = userData.username || updatedUser.name;
           }
-  
+
           setUser(updatedUser);
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -39,10 +40,9 @@ const Navbar = () => {
         setUser(null);
       }
     });
-  
+
     return () => unsubscribe();
   }, []);
-  
 
   return (
     <>
@@ -54,6 +54,17 @@ const Navbar = () => {
               <button onClick={() => navigate("/")} className="flex items-center space-x-2">
                 <Recycle className="h-8 w-8" />
                 <span className="text-xl font-bold">EcoTech Market</span>
+              </button>
+            </div>
+
+            {/* Hamburger Menu for Mobile */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 rounded-full hover:bg-green-600 transition-colors"
+                aria-label="Toggle Menu"
+              >
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </button>
             </div>
 
@@ -85,11 +96,11 @@ const Navbar = () => {
             </div>
 
             {/* User Icons */}
-            <div className="flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-4">
               <button className="p-2 rounded-full hover:bg-green-600 transition-colors" aria-label="Cart">
                 <ShoppingCart className="h-5 w-5" />
               </button>
-              
+
               {/* User Profile Button */}
               <button
                 className="p-2 rounded-full hover:bg-green-600 transition-colors flex items-center space-x-2"
@@ -106,6 +117,23 @@ const Navbar = () => {
             </div>
           </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-green-700 text-white px-4 py-4 space-y-2">
+            <Link to="/marketplace" className="block hover:text-green-200">Marketplace</Link>
+            <Link to="/sell" className="block hover:text-green-200">Sell Device</Link>
+            <Link to="/auctions" className="block hover:text-green-200">Auctions</Link>
+            <Link to="/environmental-impact" className="block hover:text-green-200">Environmental Impact</Link>
+            <button
+              onClick={() => setShowEcoPoints(!showEcoPoints)}
+              className="flex items-center space-x-1 bg-green-600 px-3 py-1 rounded-full hover:bg-green-500 transition-colors w-full"
+            >
+              <Leaf className="h-4 w-4" />
+              <span className="text-sm font-medium">{ecoPoints} EcoPoints</span>
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* User Profile Modal */}
