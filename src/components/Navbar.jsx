@@ -96,23 +96,39 @@ const Navbar = () => {
             </div>
 
             {/* User Icons */}
-            <div className="hidden md:flex items-center space-x-4">
-              <button className="p-2 rounded-full hover:bg-green-600 transition-colors" aria-label="Cart">
+            <div className="flex items-center space-x-4">
+              {/* Cart Icon */}
+              <button
+                className="p-2 rounded-full hover:bg-green-600 transition-colors relative group"
+                aria-label="Cart"
+              >
                 <ShoppingCart className="h-5 w-5" />
+                {/* Tooltip */}
+                <span className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition">
+                  Cart
+                </span>
               </button>
 
               {/* User Profile Button */}
               <button
-                className="p-2 rounded-full hover:bg-green-600 transition-colors flex items-center space-x-2"
+                className="p-2 rounded-full hover:bg-green-600 transition-colors flex items-center space-x-2 relative group"
                 aria-label="User Profile"
                 onClick={() => setShowProfileModal(true)}
               >
                 {user?.photoURL ? (
-                  <img src={user.photoURL} alt="User Avatar" className="h-8 w-8 rounded-full" />
+                  <img
+                    src={user.photoURL}
+                    alt="User Avatar"
+                    className="h-8 w-8 rounded-full"
+                  />
                 ) : (
                   <UserCircle className="h-6 w-6" />
                 )}
                 <span className="hidden md:inline text-sm">{user?.name || "Guest"}</span>
+                {/* Tooltip */}
+                <span className="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition">
+                  Profile
+                </span>
               </button>
             </div>
           </div>
@@ -125,13 +141,6 @@ const Navbar = () => {
             <Link to="/sell" className="block hover:text-green-200">Sell Device</Link>
             <Link to="/auctions" className="block hover:text-green-200">Auctions</Link>
             <Link to="/environmental-impact" className="block hover:text-green-200">Environmental Impact</Link>
-            <button
-              onClick={() => setShowEcoPoints(!showEcoPoints)}
-              className="flex items-center space-x-1 bg-green-600 px-3 py-1 rounded-full hover:bg-green-500 transition-colors w-full"
-            >
-              <Leaf className="h-4 w-4" />
-              <span className="text-sm font-medium">{ecoPoints} EcoPoints</span>
-            </button>
           </div>
         )}
       </nav>

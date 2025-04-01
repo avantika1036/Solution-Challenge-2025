@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, SlidersHorizontal, Smartphone, Laptop, Tv, Headphones, Monitor, Printer, Watch } from 'lucide-react';
 
 const categories = [
-  { name: 'All', icon: null }, // Add "All" category
+  { name: 'All', icon: null },
   { name: 'Smartphones', icon: Smartphone },
   { name: 'Laptops', icon: Laptop },
   { name: 'TVs', icon: Tv },
@@ -53,32 +53,32 @@ const MarketplacePage = () => {
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
       selectedCategory === 'All' || product.category === selectedCategory;
-    const matchesSearchQuery = product.name
+    const matchesSearch = product.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearchQuery;
+    return matchesCategory && matchesSearch;
   });
 
   return (
     <div className="min-h-screen bg-gray-900 py-8 text-white">
       <div className="max-w-7xl mx-auto px-4">
         {/* Search and Filter Section */}
-        <div className="flex flex-col md:flex-row items-center gap-4 mb-8">
+        <div className="flex flex-wrap items-center gap-4 mb-8">
           {/* Search Bar */}
-          <div className="flex-1 relative w-full">
+          <div className="flex-grow relative w-full">
             <input
               type="text"
               placeholder="Search for devices..."
-              className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-600 bg-gray-800 text-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Search className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" />
           </div>
 
           {/* Filter Button */}
-          <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow-md md:w-auto w-full">
-            <SlidersHorizontal className="h-5 w-5" />
+          <button className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-300 text-gray-800 text-sm flex items-center">
+            <SlidersHorizontal className="h-4 w-4 mr-1" />
             Filters
           </button>
         </div>
@@ -86,17 +86,16 @@ const MarketplacePage = () => {
         {/* Categories */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">Categories</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-4">
             {categories.map(({ name, icon: Icon }) => (
               <button
                 key={name}
                 onClick={() => setSelectedCategory(name)}
-                className={`flex flex-col items-center p-4 rounded-xl border transition-colors duration-150
-                  ${
-                    selectedCategory === name
-                      ? 'border-green-500 bg-green-600 text-white'
-                      : 'border-gray-200 bg-gray-800 text-gray-300 hover:border-green-500 hover:bg-green-700 hover:text-white'
-                  }`}
+                className={`flex flex-col items-center p-4 rounded-xl border transition-colors duration-150 ${
+                  selectedCategory === name
+                    ? 'border-green-500 bg-green-600 text-white'
+                    : 'border-gray-200 bg-gray-800 text-gray-300 hover:border-green-500 hover:bg-green-700 hover:text-white'
+                }`}
               >
                 {Icon && <Icon className="h-6 w-6 mb-2" />}
                 <span className="text-sm">{name}</span>
@@ -110,7 +109,7 @@ const MarketplacePage = () => {
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-xl shadow-sm hover:shadow-md transition text-black"
+              className="bg-white rounded-xl shadow-sm hover:shadow-md transition"
             >
               <img
                 src={product.image}
