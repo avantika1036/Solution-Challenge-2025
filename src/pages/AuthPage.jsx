@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import Spline from "@splinetool/react-spline";
+import { AtSign, Key, User } from "lucide-react";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true); // Toggle between login & register
@@ -45,8 +46,8 @@ const AuthPage = () => {
     <div className="min-h-screen flex flex-col lg:flex-row items-center justify-center bg-gradient-to-br from-gray-800 via-gray-900 to-gray-700 relative overflow-hidden text-white">
       {/* Animated Particles */}
       <div className="absolute inset-0 z-0">
-        <div className="w-[200px] h-[200px] bg-gray-500 rounded-full blur-3xl opacity-20 absolute top-10 left-10 animate-pulse"></div>
-        <div className="w-[300px] h-[300px] bg-gray-600 rounded-full blur-3xl opacity-20 absolute bottom-10 right-10 animate-pulse"></div>
+        <div className="w-[200px] h-[200px] bg-green-500 rounded-full blur-3xl opacity-30 absolute top-10 left-10 animate-pulse"></div>
+        <div className="w-[300px] h-[300px] bg-blue-500 rounded-full blur-3xl opacity-30 absolute bottom-10 right-10 animate-pulse"></div>
       </div>
 
       {/* Login/Register Section */}
@@ -61,20 +62,20 @@ const AuthPage = () => {
         {/* Tabs */}
         <div className="flex justify-center mb-8">
           <div
-            className={`cursor-pointer px-6 py-2 ${
+            className={`cursor-pointer px-6 py-2 transition ${
               isLogin
                 ? "border-b-4 border-green-400 font-bold text-green-400"
-                : "text-gray-400"
+                : "text-gray-400 hover:text-green-400"
             }`}
             onClick={() => setIsLogin(true)}
           >
             Login
           </div>
           <div
-            className={`cursor-pointer px-6 py-2 ${
+            className={`cursor-pointer px-6 py-2 transition ${
               !isLogin
                 ? "border-b-4 border-green-400 font-bold text-green-400"
-                : "text-gray-400"
+                : "text-gray-400 hover:text-green-400"
             }`}
             onClick={() => setIsLogin(false)}
           >
@@ -85,7 +86,7 @@ const AuthPage = () => {
         {/* Auth Form */}
         <form onSubmit={handleAuth} className="space-y-6">
           {!isLogin && (
-            <div>
+            <div className="relative">
               <label className="block text-sm font-medium mb-2">Full Name</label>
               <input
                 type="text"
@@ -93,11 +94,12 @@ const AuthPage = () => {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
-                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-white"
+                className="w-full px-4 py-2 pl-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-white shadow-md hover:shadow-lg transition"
               />
+              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             </div>
           )}
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium mb-2">Email</label>
             <input
               type="email"
@@ -105,23 +107,25 @@ const AuthPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-white"
+              className="w-full px-4 py-3 pl-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-white shadow-md hover:shadow-lg transition"
             />
+            <AtSign className="absolute left-4 top-3/4 transform -translate-y-2/4 h-5 w-5 text-gray-400" />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
+          <div className="relative">
+            <label className="block  text-sm font-medium mb-2">Password</label>
             <input
               type="password"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-white"
+              className="w-full px-4 py-3 pl-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-gray-700 text-white shadow-md hover:shadow-lg transition"
             />
+            <Key className="absolute left-4 top-3/4 transform -translate-y-2/4 h-5 w-5 text-gray-400" />
           </div>
           <button
             type="submit"
-            className="w-full bg-green-400 text-white py-3 rounded-lg hover:bg-green-500 transition font-semibold"
+            className="w-full bg-gradient-to-r from-green-400 to-green-500 text-white py-3 rounded-lg hover:from-green-500 hover:to-green-600 transition font-semibold shadow-md hover:shadow-lg"
           >
             {isLogin ? "Login" : "Register"}
           </button>
@@ -131,7 +135,7 @@ const AuthPage = () => {
 
         <button
           onClick={handleGoogleSignIn}
-          className="w-full bg-red-500 text-white py-3 rounded-lg hover:bg-red-600 transition font-semibold"
+          className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-lg hover:from-red-600 hover:to-red-700 transition font-semibold shadow-md hover:shadow-lg"
         >
           Sign in with Google
         </button>
