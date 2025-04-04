@@ -118,8 +118,12 @@ const AuctionsPage = () => {
             : a
         )
       );
+  
+      // Alert the user that the bid was placed successfully
+      alert(`Your bid of $${bidAmount} has been placed successfully!`);
     } catch (error) {
       console.error("Error placing bid:", error);
+      alert("An error occurred while placing your bid. Please try again.");
     }
   };
   
