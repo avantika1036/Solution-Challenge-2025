@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Timer, ArrowUp, Search } from "lucide-react";
-import { db } from "../firebaseConfig";
+import { db, auth } from "../firebaseConfig"; // Import Firebase auth
 import { collection, getDocs, query, where, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 
 const AuctionsPage = () => {
@@ -73,6 +73,14 @@ const AuctionsPage = () => {
     }
   
     try {
+      const user = auth.currentUser; // Get the currently logged-in user
+      if (!user) {
+        alert("You must be logged in to place a bid!");
+        return;
+      }
+  
+      const userId = user.uid; // Get the user's unique ID
+  
       const auctionRef = doc(db, "devices", auctionId);
       const auctionSnapshot = await getDoc(auctionRef);
   
@@ -82,26 +90,31 @@ const AuctionsPage = () => {
       }
   
       const auctionData = auctionSnapshot.data();
+  
+      // Check if the bid amount is greater than the current bid
+      if (bidAmount <= (auctionData.currentBid || 0)) {
+        alert("Bid amount must be greater than the current bid!");
+        return;
+      }
+  
       const updatedTotalBids = (auctionData.totalBids || 0) + 1;
   
+      // Update Firestore with the new bid and total bids
       await updateDoc(auctionRef, {
         bids: arrayUnion({
           amount: bidAmount,
           timestamp: Date.now(),
-          userId: "user_123", // Replace with actual user ID
+          userId: userId, // Use the logged-in user's ID
         }),
         currentBid: bidAmount, // Update the highest bid
         totalBids: updatedTotalBids, // Update bid count
       });
   
-      // 🔄 Fetch the updated data from Firestore and refresh UI
-      const updatedAuctionSnapshot = await getDoc(auctionRef);
-      const updatedAuctionData = updatedAuctionSnapshot.data();
-  
+      // Update the local state to reflect the changes
       setAuctionData((prevData) =>
         prevData.map((a) =>
           a.id === auctionId
-            ? { ...a, currentBid: bidAmount, totalBids: updatedAuctionData.totalBids }
+            ? { ...a, currentBid: bidAmount, totalBids: updatedTotalBids }
             : a
         )
       );
@@ -159,7 +172,7 @@ const AuctionsPage = () => {
                 </div>
 
                 <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-2">{auction.title}</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-black">{auction.title}</h3> {/* Changed color to black */}
                   <p className="text-sm text-gray-600 mb-4">{auction.condition}</p>
 
                   <div className="flex justify-between items-center mb-4">
@@ -171,7 +184,7 @@ const AuctionsPage = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-gray-500">Total Bids</p>
-                      <p className="text-xl font-bold">{auction.totalBids || "0"}</p>
+                      <p className="text-xl font-bold text-black">{auction.totalBids || "0"}</p> {/* Total Bids color already updated */}
                     </div>
                   </div>
 
