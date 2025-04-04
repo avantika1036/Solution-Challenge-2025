@@ -14,6 +14,7 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState(""); // For registration
+  const [isSplineLoaded, setIsSplineLoaded] = useState(false); // Track Spline loading state
   const navigate = useNavigate();
 
   const handleAuth = async (e) => {
@@ -144,7 +145,17 @@ const AuthPage = () => {
       {/* Spline 3D Scene Section */}
       <div className="relative z-10 w-full lg:w-1/2 h-[400px] md:h-[500px] lg:h-[600px] flex items-center justify-center m-4">
         <div className="absolute inset-0 bg-gradient-to-t from-transparent to-gray-800 opacity-50 rounded-lg"></div>
-        <Spline scene="https://prod.spline.design/0eIL9kOwuhW7bUjy/scene.splinecode" hideUI />
+        {/* Show spinner while Spline is loading */}
+        {!isSplineLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-12 h-12 border-4 border-green-400 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        )}
+        <Spline
+          scene="https://prod.spline.design/0eIL9kOwuhW7bUjy/scene.splinecode"
+          onLoad={() => setIsSplineLoaded(true)} // Set loading state to true when loaded
+          hideUI
+        />
       </div>
     </div>
   );

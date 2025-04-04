@@ -17,7 +17,9 @@ import Footer from "./components/Footer";
 
 const App: React.FC = () => {
   const location = useLocation();
-  const showNavbarAndFooter: boolean = location.pathname !== "/auth"; // Hide navbar/footer on auth page
+
+  // Hide Navbar and Footer on both the AuthPage and HomePage
+  const showNavbarAndFooter: boolean = !["/auth", "/"].includes(location.pathname);
 
   return (
     <div className="min-h-screen flex flex-col">
