@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import axios from 'axios';
 import { Bar, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -11,6 +12,8 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { auth, db } from "../firebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 // Register ChartJS components
 ChartJS.register(
@@ -25,20 +28,119 @@ ChartJS.register(
 );
 
 const EnvironmentalImpactPage = () => {
-  // Sample data - replace with real user data
-  const impactData = {
-    co2Reduced: 24.3, // kg
-    wasteDiverted: 18.7, // kg
-    itemsRecycled: 32,
-    monthlyData: [
-      { month: 'Jan', co2: 3.2, waste: 2.1 },
-      { month: 'Feb', co2: 4.1, waste: 2.8 },
-      { month: 'Mar', co2: 5.6, waste: 3.4 },
-      { month: 'Apr', co2: 6.2, waste: 4.0 },
-      { month: 'May', co2: 5.3, waste: 3.7 },
-    ]
-  };
-
+  const [impactData, setImpactData] = useState({
+    co2Reduced: 0,
+    wasteDiverted: 0,
+    itemsRecycled: 0,
+    monthlyData: [],
+  });
+  
+  useEffect(() => {
+    const fetchUserImpact = async () => {
+      const currentUser = auth.currentUser;
+      if (!currentUser) return;
+  
+      const q = query(
+        collection(db, "devices"),
+        where("userId", "==", currentUser.uid)
+      );
+  
+      const querySnapshot = await getDocs(q);
+  
+      // ✅ Declare required vars
+      const apiKey = import.meta.env.VITE_CLIMATIQ_API_KEY;
+      let co2Total = 0;
+      let wasteTotal = 0;
+      let items = 0;
+      const monthlyStats = {};
+  
+      const typeMap = {
+        smartphone: "electronics-type_consumer_electronics_mobile_device_smartphone_consumer_electronics_production_mobile_device_smartphone",
+        laptop: "electronics-type_laptop_14_inches",
+        tablet: "electronics-type_tablet",
+        desktop: "electronics-type_desktop",
+        tv: "electronics-type_television_cameras_and_other_electronic_goods",
+        audio: "electronics-type_audio_and_video_equipment_and_unrecorded_media",
+        wearables: "equipment_repair-type_consumer_electronics_repair_and_maintenance",
+      };
+  
+      for (const doc of querySnapshot.docs) {
+        const data = doc.data();
+        const weight = parseFloat(data.weight || 0.2);
+        const rawCategory = (data.category || "").toLowerCase().trim();
+        const activity_id = typeMap[rawCategory];
+  
+        if (!activity_id) {
+          console.warn(`Unsupported category "${data.category}", skipping...`);
+          wasteTotal += weight;
+          items += 1;
+          continue;
+        }
+  
+        try {
+          const response = await axios.post(
+            "https://api.climatiq.io/estimate",
+            {
+              emission_factor: {
+                activity_id,
+              },
+              parameters: {
+                weight,
+                weight_unit: "kg",
+              },
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${apiKey}`,
+              },
+            }
+          );
+  
+          const co2e = response.data.co2e || 0;
+          const createdAt = data.createdAt?.toDate();
+  
+          co2Total += co2e;
+          wasteTotal += weight;
+          items += 1;
+  
+          if (createdAt) {
+            const month = createdAt.toLocaleString("default", { month: "short" });
+            if (!monthlyStats[month]) {
+              monthlyStats[month] = { co2: 0, waste: 0 };
+            }
+            monthlyStats[month].co2 += co2e;
+            monthlyStats[month].waste += weight;
+          }
+        } catch (err) {
+          console.error("Climatiq API error:", err.message);
+        }
+      }
+  
+      const monthlyData = Object.entries(monthlyStats).map(([month, stats]) => ({
+        month,
+        ...stats,
+      }));
+  
+      console.log("Final impactData:", {
+        co2Reduced: co2Total,
+        wasteDiverted: wasteTotal,
+        items,
+        monthlyStats,
+      });
+  
+      setImpactData({
+        co2Reduced: co2Total.toFixed(1),
+        wasteDiverted: wasteTotal.toFixed(1),
+        itemsRecycled: items,
+        monthlyData,
+      });
+    };
+  
+    fetchUserImpact();
+  }, []);
+  
+  
+  
   // Bar Chart Data
   const barData = {
     labels: ['CO₂ Reduced (kg)', 'Waste Diverted (kg)', 'Items Recycled'],

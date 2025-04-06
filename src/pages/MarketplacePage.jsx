@@ -1,84 +1,80 @@
-import React, { useState } from 'react';
-import { Search, SlidersHorizontal, Smartphone, Laptop, Tv, Headphones, Monitor, Printer, Watch } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  Search, SlidersHorizontal,
+  Smartphone, Laptop, Tv, Headphones, Monitor, Printer, Watch
+} from 'lucide-react';
+import { db } from '../firebaseConfig';
+import { collection, getDocs } from 'firebase/firestore';
 
 const categories = [
   { name: 'All', icon: null },
-  { name: 'Smartphones', icon: Smartphone },
-  { name: 'Laptops', icon: Laptop },
-  { name: 'TVs', icon: Tv },
+  { name: 'Smartphone', icon: Smartphone },
+  { name: 'Laptop', icon: Laptop },
+  { name: 'TV', icon: Tv },
   { name: 'Audio', icon: Headphones },
-  { name: 'Monitors', icon: Monitor },
-  { name: 'Printers', icon: Printer },
+  { name: 'Desktop', icon: Monitor },
+  { name: 'Other', icon: Printer },
   { name: 'Wearables', icon: Watch },
-];
-
-const products = [
-  {
-    id: 1,
-    name: 'iPhone 13 Pro',
-    category: 'Smartphones',
-    condition: 'Refurbished',
-    price: 699,
-    image: 'https://images.unsplash.com/photo-1632661674596-df8be070a5c5?auto=format&fit=crop&q=80&w=400',
-    seller: 'TechRecycle Pro',
-    rating: 4.8,
-  },
-  {
-    id: 2,
-    name: 'MacBook Air M1',
-    category: 'Laptops',
-    condition: 'Used - Like New',
-    price: 799,
-    image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&q=80&w=400',
-    seller: 'GreenTech Solutions',
-    rating: 4.9,
-  },
-  {
-    id: 3,
-    name: 'Samsung 4K Smart TV',
-    category: 'TVs',
-    condition: 'Refurbished',
-    price: 549,
-    image: 'https://images.unsplash.com/photo-1601944179066-29786cb9d32a?auto=format&fit=crop&q=80&w=400',
-    seller: 'EcoElectronics',
-    rating: 4.7,
-  },
 ];
 
 const MarketplacePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [devices, setDevices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Filter products based on search query and selected category
-  const filteredProducts = products.filter((product) => {
+  // Fetch Firestore devices
+  useEffect(() => {
+    const fetchDevices = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, 'devices'));
+        const items = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setDevices(items);
+      } catch (err) {
+        console.error('Error fetching devices:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDevices();
+  }, []);
+
+  // Filtering logic
+  const filteredDevices = devices.filter((device) => {
     const matchesCategory =
-      selectedCategory === 'All' || product.category === selectedCategory;
-    const matchesSearch = product.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
+      selectedCategory === 'All' ||
+      device.category?.toLowerCase() === selectedCategory.toLowerCase();
+
+    const matchesSearch =
+      searchQuery.trim() === '' ||
+      device.title?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const isFixed = device.listingType === 'fixed';
+
+    return matchesCategory && matchesSearch && isFixed;
   });
 
   return (
     <div className="min-h-screen bg-gray-900 py-8 text-white">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Search and Filter Section */}
-        <div className="flex flex-wrap items-center gap-4 mb-8">
-          {/* Search Bar */}
-          <div className="flex-grow relative w-full">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex items-center justify-between mb-6">
+          <div className="relative w-full max-w-md">
             <input
               type="text"
               placeholder="Search for devices..."
-              className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent text-black"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" />
+            <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
           </div>
-
-          {/* Filter Button */}
-          <button className="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-300 text-gray-800 text-sm flex items-center">
-            <SlidersHorizontal className="h-4 w-4 mr-1" />
+          <button className="ml-4 flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-300 text-gray-800">
+            <SlidersHorizontal className="h-5 w-5" />
             Filters
           </button>
         </div>
@@ -104,41 +100,50 @@ const MarketplacePage = () => {
           </div>
         </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-xl shadow-sm hover:shadow-md transition"
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-t-xl"
-              />
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-semibold">{product.name}</h3>
-                  <span className="text-lg font-bold text-green-600">
-                    ${product.price}
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">{product.condition}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-500">{product.seller}</span>
-                  <div className="flex items-center">
-                    <span className="text-sm font-medium text-gray-700 mr-1">
-                      {product.rating}
-                    </span>
-                    <span className="text-yellow-400">★</span>
-                  </div>
-                </div>
-                <button className="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
-                  View Details
-                </button>
+        {/* Fixed Price Listings */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4">For Sale (Fixed Price)</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {loading ? (
+              <div className="col-span-full text-center text-gray-400">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-green-500 mx-auto mb-2"></div>
+                Fetching products...
               </div>
-            </div>
-          ))}
+            ) : filteredDevices.length === 0 ? (
+              <div className="col-span-full text-center text-gray-400">
+                <p>No devices found.</p>
+                <p>Try adjusting your search or category filter.</p>
+              </div>
+            ) : (
+              filteredDevices.map((device) => (
+                <Link
+                  to={`/device/${device.id}`}
+                  key={device.id}
+                  className="bg-white rounded-xl shadow-sm hover:shadow-md transition text-black"
+                >
+                  <img
+                    src={device.images?.[0] || '/placeholder-image.jpg'}
+                    alt={device.title}
+                    className="w-full h-48 object-cover rounded-t-xl"
+                  />
+                  <div className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-lg font-semibold">{device.title}</h3>
+                      <span className="text-lg font-bold text-green-600">${device.price}</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">{device.condition}</p>
+                    <div className="bg-gray-100 p-2 rounded text-sm">
+                      <p className="text-gray-600">🌱 EcoPoints: {device.ecoPoints}</p>
+                      <p className="text-gray-600">🌍 CO₂ Saved: {device.co2Reduced} kg</p>
+                    </div>
+                    <button className="w-full mt-4 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition">
+                      View Details
+                    </button>
+                  </div>
+                </Link>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>

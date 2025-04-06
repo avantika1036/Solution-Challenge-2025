@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { db, storage } from "../firebaseConfig";
 import { collection, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth } from '../firebaseConfig';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+
 
 
 const categories = [
@@ -107,23 +110,48 @@ const SellDevicePage = () => {
       }
   
       // Prepare device data
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        alert("You must be logged in to list a device.");
+        return;
+      }
+
       const deviceData = {
+        userId: currentUser.uid, // ✅ Add this line
         title: data.title,
         category: data.category,
         condition: data.condition,
         price: Number(data.price),
-        listingType: data.listingType, // This helps determine where the device goes
+        listingType: data.listingType,
         description: data.description,
-        images: images, // Store Cloudinary image URLs
+        images: images,
         co2Reduced: impact.co2Reduced,
         wasteDiverted: impact.wasteDiverted,
         ecoPoints: impact.ecoPoints,
         createdAt: new Date(),
       };
+
   
-      await addDoc(collection(db, "devices"), deviceData);
+      // Add device to DB
+        await addDoc(collection(db, "devices"), deviceData);
+
+        // Update user ecoPoints
+        if (currentUser) {
+          const userRef = doc(db, "users", currentUser.uid);
+          const userSnap = await getDoc(userRef);
+          const previousPoints = userSnap.exists() ? userSnap.data().ecoPoints || 0 : 0;
+
+          await updateDoc(userRef, {
+            ecoPoints: previousPoints + impact.ecoPoints,
+          });
+
+          // Dispatch event to notify Navbar
+          window.dispatchEvent(new Event("ecoPointsUpdated"));
+        }
+
   
       alert("Device listed successfully!");
+      window.dispatchEvent(new Event("ecoPointsUpdated"));
       navigate("/marketplace"); // Redirect to marketplace page
     } catch (error) {
       console.error("Error submitting form:", error);

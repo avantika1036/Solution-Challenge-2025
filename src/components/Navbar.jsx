@@ -4,6 +4,7 @@ import { Recycle, ShoppingCart, UserCircle, Leaf, Menu, X } from "lucide-react";
 import UserProfileModal from "./UserProfileModal";
 import { auth, db } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 
 const Navbar = () => {
@@ -14,25 +15,40 @@ const Navbar = () => {
   const [ecoPoints, setEcoPoints] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const fetchEcoPoints = async (userId) => {
+    const q = query(collection(db, "devices"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+  
+    let totalCo2 = 0;
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      totalCo2 += parseFloat(data.co2Reduced || 0);
+    });
+  
+    setEcoPoints(Math.round(totalCo2 * 10)); // 10 points per kg CO2
+  };
+  
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         try {
           const userDocRef = doc(db, "users", currentUser.uid);
           const userSnap = await getDoc(userDocRef);
-
+  
           let updatedUser = {
             name: currentUser.displayName || "Guest",
             email: currentUser.email || "No Email",
             photoURL: currentUser.photoURL || null,
           };
-
+  
           if (userSnap.exists()) {
             const userData = userSnap.data();
             updatedUser.name = userData.username || updatedUser.name;
           }
-
+  
           setUser(updatedUser);
+          await fetchEcoPoints(currentUser.uid); // fetch points on login
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -40,9 +56,24 @@ const Navbar = () => {
         setUser(null);
       }
     });
-
-    return () => unsubscribe();
+  
+    // 👇 This is Step 4: listen for event to update points
+    const handleEcoPointsUpdate = () => {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        fetchEcoPoints(currentUser.uid);
+      }
+    };
+  
+    window.addEventListener("ecoPointsUpdated", handleEcoPointsUpdate);
+  
+    // Cleanup both the auth listener and custom event listener
+    return () => {
+      unsubscribe();
+      window.removeEventListener("ecoPointsUpdated", handleEcoPointsUpdate);
+    };
   }, []);
+  
 
   return (
     <>
